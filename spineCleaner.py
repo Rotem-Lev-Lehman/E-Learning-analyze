@@ -45,27 +45,31 @@ outFilename = "D:\\data for kobi\\eLearning\\new episode level\\NewSpine.csv"
 duplicateEpisodesFilename = "D:\\data for kobi\\eLearning\\new episode level\\DuplicateEpisodes.csv"
 
 epMap = {}  # define an empty dictionary to map from episode to hierarchy
+duplicates = {}
 
 with open(filename, 'rb') as csvfile:
     creader = csv.reader(csvfile, delimiter=',')
     lineNum = 1
     a = next(creader)  # get rid of first header line
 
-    with open(duplicateEpisodesFilename, 'wb') as duplicatesFile:
-        duplicatesWriter = csv.writer(duplicatesFile, delimiter=',')
+    for row in creader:
+        h = BuildHierarchy(row)
 
-        for row in creader:
-            h = BuildHierarchy(row)
+        for i in range(9, 29, 1):
+            if row[i]:
+                if row[i] in duplicates:
+                    # append another duplicate:
+                    duplicates[row[i]].append(h)
+                    continue
+                if row[i] in epMap:
+                    # a newly found duplicate:
+                    duplicates[row[i]] = [epMap[row[i]], h]
+                    # if epMap[row[i]] != h:
+                    #     print 'duplicate episode: "' + row[i] + '", was found in line: ' + str(lineNum)
+                else:
+                    epMap[row[i]] = h
 
-            for i in range(9, 29, 1):
-                if row[i]:
-                    if row[i] in epMap:
-                        if epMap[row[i]] != h:
-                            print 'duplicate episode: "' + row[i] + '", was found in line: ' + str(lineNum)
-                    else:
-                        epMap[row[i]] = h
-
-            lineNum = lineNum + 1
+        lineNum = lineNum + 1
 
     with open(outFilename, 'wb') as outFile:
         cwriter = csv.writer(outFile, delimiter=',')
@@ -74,3 +78,13 @@ with open(filename, 'rb') as csvfile:
         for episode in epMap:
             h = epMap[episode]
             cwriter.writerow([episode, h.level1, h.level2, h.level3, h.level4, h.level5])
+
+    with open(duplicateEpisodesFilename, 'wb') as duplicatesFile:
+        duplicatesWriter = csv.writer(duplicatesFile, delimiter=',')
+
+        duplicatesWriter.writerow(['serial number of duplicate', 'episode', 'level1', 'level2', 'level3', 'level4', 'level5'])
+        for episode in duplicates:
+            num = 1
+            for h in duplicates[episode]:
+                duplicatesWriter.writerow([str(num), episode, h.level1, h.level2, h.level3, h.level4, h.level5])
+                num = num + 1
