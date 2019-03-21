@@ -38,6 +38,11 @@ def BuildHierarchy(row):
     h = Hierarchy(row[2], row[3], row[4], row[5], row[6])
     return h
 
+
+def checkComma(str):
+    return '|' in str
+
+
 import csv
 
 filename = "D:\\data for kobi\\eLearning\\new episode level\\Spine.csv"
@@ -72,7 +77,7 @@ with open(filename, 'rb') as csvfile:
         lineNum = lineNum + 1
 
     with open(outFilename, 'wb') as outFile:
-        cwriter = csv.writer(outFile, delimiter=',')
+        cwriter = csv.writer(outFile, delimiter='|')
 
         cwriter.writerow(['episode', 'level1', 'level2', 'level3', 'level4', 'level5'])
         for episode in epMap:
@@ -80,7 +85,7 @@ with open(filename, 'rb') as csvfile:
             cwriter.writerow([episode, h.level1, h.level2, h.level3, h.level4, h.level5])
 
     with open(duplicateEpisodesFilename, 'wb') as duplicatesFile:
-        duplicatesWriter = csv.writer(duplicatesFile, delimiter=',')
+        duplicatesWriter = csv.writer(duplicatesFile, delimiter='|')
 
         duplicatesWriter.writerow(['serial number of duplicate', 'episode', 'level1', 'level2', 'level3', 'level4', 'level5'])
         for episode in duplicates:
