@@ -67,5 +67,6 @@ with open(filename, 'rb') as csvfile:
         cwriter = csv.writer(outFile, delimiter=',')
 
         cwriter.writerow(['episode', 'level1', 'level2', 'level3', 'level4', 'level5'])
-        for episode, h in epMap:
+        for episode in epMap:
+            h = epMap[episode]
             cwriter.writerow([episode, h.level1, h.level2, h.level3, h.level4, h.level5])
