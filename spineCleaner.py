@@ -42,6 +42,7 @@ import csv
 
 filename = "D:\\data for kobi\\eLearning\\new episode level\\Spine.csv"
 outFilename = "D:\\data for kobi\\eLearning\\new episode level\\NewSpine.csv"
+duplicateEpisodesFilename = "D:\\data for kobi\\eLearning\\new episode level\\DuplicateEpisodes.csv"
 
 epMap = {}  # define an empty dictionary to map from episode to hierarchy
 
@@ -50,18 +51,21 @@ with open(filename, 'rb') as csvfile:
     lineNum = 1
     a = next(creader)  # get rid of first header line
 
-    for row in creader:
-        h = BuildHierarchy(row)
+    with open(duplicateEpisodesFilename, 'wb') as duplicatesFile:
+        duplicatesWriter = csv.writer(duplicatesFile, delimiter=',')
 
-        for i in range(9, 29, 1):
-            if row[i]:
-                if row[i] in epMap:
-                    if epMap[row[i]] != h:
-                        print 'duplicate episode: "' + row[i] + '", was found in line: ' + str(lineNum)
-                else:
-                    epMap[row[i]] = h
+        for row in creader:
+            h = BuildHierarchy(row)
 
-        lineNum = lineNum + 1
+            for i in range(9, 29, 1):
+                if row[i]:
+                    if row[i] in epMap:
+                        if epMap[row[i]] != h:
+                            print 'duplicate episode: "' + row[i] + '", was found in line: ' + str(lineNum)
+                    else:
+                        epMap[row[i]] = h
+
+            lineNum = lineNum + 1
 
     with open(outFilename, 'wb') as outFile:
         cwriter = csv.writer(outFile, delimiter=',')
