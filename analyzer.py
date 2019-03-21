@@ -31,7 +31,7 @@ class Student:
                 episode = self.episodes[episode_slug]
                 if topic in self.topics:
                     self.topics[topic][0] = self.topics[topic][0] + episode.correct_answers_percentage
-                    self.topics[topic][1] = self.topics[1] + float(1)
+                    self.topics[topic][1] = self.topics[topic][1] + float(1)
                 else:
                     self.topics[topic] = [episode.correct_answers_percentage, float(1)]  # percentage_on_topic, num_of_episodes_on_topic
 
@@ -58,27 +58,33 @@ class Student:
 
 def myReader(fileName):
     with open(fileName, 'rb') as csvfile:
+        errorCount = 0
+        totalCount = 0
         creader = csv.reader(csvfile, delimiter='|')
 
         for row in creader:
             is_finished = int(row[19])
             if is_finished == 0:  # if not finished ignore this attempt
                 continue
+            try:
+                account_id = row[0]
 
-            account_id = row[0]
+                episode_slug = re.sub(r'_.*', '', row[9])
 
-            episode_slug = re.sub(r'_.*', '', row[9])
+                correct_answers_percentage = float(row[21])
+                episode = Episode(episode_slug, correct_answers_percentage)
 
-            correct_answers_percentage = float(row[21])
-            episode = Episode(episode_slug, correct_answers_percentage)
+                if account_id in students:
+                    students[account_id].addEpisode(episode)
+                else:
+                    currentStudent = Student(account_id)
+                    currentStudent.addEpisode(episode)
+                    students[account_id] = currentStudent
+            except:
+                errorCount = errorCount + 1
+            totalCount = totalCount + 1
 
-            if account_id in students:
-                students[account_id].addEpisode(episode)
-            else:
-                currentStudent = Student(account_id)
-                currentStudent.addEpisode(episode)
-                students[account_id] = currentStudent
-
+        print 'At this file, there were ' + str(errorCount) + ' errors, out of total ' + str(totalCount) + ' rows'
 
 
 def getRelevantTopic(row):
