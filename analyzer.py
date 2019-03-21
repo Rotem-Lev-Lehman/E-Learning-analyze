@@ -15,7 +15,7 @@ class Student:
         self.topics = {}
 
     def addEpisode(self, episode):
-        if episode.episode_slug not in self.episodes:
+        if episode.episode_slug not in self.episodes:  # take only the first try of the student
             self.episodes[episode.episode_slug] = episode
 
     def calculateTopics(self):
