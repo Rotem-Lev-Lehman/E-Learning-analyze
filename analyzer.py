@@ -22,15 +22,19 @@ class Student:
         self.topics = {}  # initialize empty
 
         for episode_slug in self.episodes:
-            topic = epMap[episode_slug]
-            if topic is None:
+            if episode_slug not in epMap:
                 continue
-            episode = self.episodes[episode_slug]
-            if topic in self.topics:
-                self.topics[topic][0] = self.topics[topic][0] + episode.correct_answers_percentage
-                self.topics[topic][1] = self.topics[1] + float(1)
-            else:
-                self.topics[topic] = [episode.correct_answers_percentage, float(1)]  # percentage_on_topic, num_of_episodes_on_topic
+            current_topics = epMap[episode_slug]
+            for topic in current_topics:
+                if topic is None:
+                    continue
+                episode = self.episodes[episode_slug]
+                if topic in self.topics:
+                    self.topics[topic][0] = self.topics[topic][0] + episode.correct_answers_percentage
+                    self.topics[topic][1] = self.topics[1] + float(1)
+                else:
+                    self.topics[topic] = [episode.correct_answers_percentage, float(1)]  # percentage_on_topic, num_of_episodes_on_topic
+
         for topic in self.topics:
             self.topics[topic][0] = self.topics[topic][0] / self.topics[topic][1]  # avg of topic score
 
@@ -52,14 +56,23 @@ class Student:
         return not self.__eq__(other)
 
 
+def clearText(str):
+    return str.replace('\'', '')
+
+
 def myReader(fileName):
     with open(fileName, 'rb') as csvfile:
         creader = csv.reader(csvfile, delimiter='|')
 
         for row in creader:
+            is_finished = int(row[19])
+            if is_finished == 0:  # if not finished ignore this attempt
+                continue
+
             account_id = row[0]
 
             episode_slug = re.sub(r'_.*', '', row[9])
+
             correct_answers_percentage = float(row[21])
             episode = Episode(episode_slug, correct_answers_percentage)
 
@@ -69,6 +82,7 @@ def myReader(fileName):
                 currentStudent = Student(account_id)
                 currentStudent.addEpisode(episode)
                 students[account_id] = currentStudent
+
 
 
 def getRelevantTopic(row):
@@ -91,9 +105,14 @@ def buildEpisodeMap(spineFilename):
         for row in creader:
             episode_slug = row[0]
             topic = getRelevantTopic(row)
-            epMap[episode_slug] = topic
             if topic is not None:
-                topicsList.append(topic)
+                if episode_slug in epMap:
+                    if topic not in epMap[episode_slug]:
+                        epMap[episode_slug].append(topic)
+                else:
+                    epMap[episode_slug] = [topic]
+                if topic not in topicsList:
+                    topicsList.append(topic)
 
 
 students = {}
