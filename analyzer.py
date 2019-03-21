@@ -56,10 +56,6 @@ class Student:
         return not self.__eq__(other)
 
 
-def clearText(str):
-    return str.replace('\'', '')
-
-
 def myReader(fileName):
     with open(fileName, 'rb') as csvfile:
         creader = csv.reader(csvfile, delimiter='|')
