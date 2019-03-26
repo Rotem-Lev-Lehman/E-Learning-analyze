@@ -2,10 +2,12 @@ import csv
 
 
 def getAllGroupsData(filename):
+    print 'Starting to read all data'
     with open(filename, 'rb') as csvfile:
         creader = csv.reader(csvfile, delimiter='|')
         a = creader.next()  # get rid of the first row (instructions...)
         data = []
+        rowCount = 1
         for row in creader:
             currData = []
             for i in range(len(row)):
@@ -13,7 +15,11 @@ def getAllGroupsData(filename):
                     continue
                 currData.append(row[i])
             data.append(currData)
+            if rowCount % 100000 == 0:
+                print 'current row = ' + str(rowCount)
+            rowCount = rowCount + 1
 
+        print 'Finished reading all data'
         return data
 
 
@@ -32,6 +38,7 @@ def kMeansAnalyze(k, inputFilename, outputFilename):
     print 'Starting to analyze ' + str(k) + ' means of the data calculated'
 
     X = getAllGroupsData(inputFilename)
+    print 'Starting to cluster'
     kmeans = KMeans(n_clusters=k)
     kmeans.fit(X)
     y_kmeans = kmeans.predict(X)
@@ -41,9 +48,10 @@ def kMeansAnalyze(k, inputFilename, outputFilename):
 print 'Starting k-means analyze'
 
 inputFilename = "D:\\data for kobi\\eLearning\\new episode level\\studentsVector.csv"
-k = 4
-outputFilename = "D:\\data for kobi\\eLearning\\new episode level\\kMeansOutput " + str(k) + " means.csv"
+ks = [5, 6, 7, 8]
+for k in ks:
+    outputFilename = "D:\\data for kobi\\eLearning\\new episode level\\kMeansOutput " + str(k) + " means.csv"
 
-kMeansAnalyze(k, inputFilename, outputFilename)
+    kMeansAnalyze(k, inputFilename, outputFilename)
 
 print 'Done k-means analyze'
