@@ -48,7 +48,7 @@ def kMeansAnalyze(k, inputFilename, outputFilename):
 print 'Starting k-means analyze'
 
 inputFilename = "D:\\data for kobi\\eLearning\\new episode level\\studentsVector.csv"
-ks = [5, 6, 7, 8]
+ks = [2, 3, 4, 5]
 for k in ks:
     outputFilename = "D:\\data for kobi\\eLearning\\new episode level\\kMeansOutput " + str(k) + " means.csv"
 

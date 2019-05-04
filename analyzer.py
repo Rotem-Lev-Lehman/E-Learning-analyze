@@ -88,12 +88,12 @@ def myReader(fileName):
 
 
 def getRelevantTopic(row):
-    if row[4]:
-        return row[4]
+    # if row[4]:
+    #     return row[4]
     if row[3]:
-        return row[3]
+        return row[1] + "->" + row[2] + "->" + row[3]
     if row[2]:
-        return row[2]
+        return row[1] + "->" + row[2]
     if row[1]:
         return row[1]
     return None
